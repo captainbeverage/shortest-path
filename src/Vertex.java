@@ -5,16 +5,20 @@ import java.util.List;
 /**
  * Created by JT on 4/21/15.
  */
-public class Vertex {
-    private String name;                // Vertex name
-    private List<Edge> adjListOfEdges;  // Adjacent edges
-    private Vertex previousVertex;      // Previous vertex on shortest path
-    private int pathDistance;           // Distance of path
+public class Vertex implements Comparable<Vertex> {
+    private String name;                                  // Vertex name
+    private List<Edge> adjListOfEdges;                    // Adjacent edges
+    private Vertex previousVertex;                        // Previous vertex on shortest path
+    private float minDistance = Float.POSITIVE_INFINITY;  // Distance of path
 
     public Vertex(String name) {
         this.name = name;
         adjListOfEdges = new LinkedList<Edge>();
         reset();
+    }
+
+    public int compareTo(Vertex otherVertex) {
+        return Float.compare(getMinDistance(), otherVertex.getMinDistance());
     }
 
     public void setName(String name) {
@@ -33,12 +37,12 @@ public class Vertex {
         return previousVertex;
     }
 
-    public void setPathDistance(int pathDistance) {
-        this.pathDistance = pathDistance;
+    public void setMinDistance(int pathDistance) {
+        this.minDistance = pathDistance;
     }
 
-    public int getPathDistance() {
-        return pathDistance;
+    public float getMinDistance() {
+        return minDistance;
     }
 
     public void addEdge(Vertex vertex, float weight) {
@@ -69,7 +73,7 @@ public class Vertex {
     }
 
     public void reset() {
-        pathDistance = Graph.getInfinity();
+        setMinDistance(Graph.getInfinity());
         previousVertex = null;
     }
 
