@@ -1,10 +1,13 @@
 import java.util.*;
 
 /**
- * Created by JT on 4/21/15.
+ * Graph class maintains a HashMap of all vertices in the graph. Executes all
+ * graph commands - Add Edge, Delete Edge, Get Shortest Path, Print Reachable
+ * Vertices, and Print Graph.
+ *
+ * @author Jordan Harris
  */
 public class Graph {
-    private static final int INFINITY = Integer.MAX_VALUE;
     private Map<String, Vertex> vertexMap = new HashMap<String,Vertex>( );
 
     /**
@@ -18,14 +21,10 @@ public class Graph {
      * Returns a vertex by name
      */
     public Vertex getVertex(String vertexName) {
-        return vertexMap.get(vertexName);
-    }
-
-    /**
-     * Returns the vertex map
-     */
-    public Map<String, Vertex> getVertexMap() {
-        return vertexMap;
+        if(vertexName.contains(vertexName))
+            return vertexMap.get(vertexName);
+        else
+            return null;
     }
 
     /**
@@ -35,7 +34,6 @@ public class Graph {
         Vertex sourceVertex = createVertex(sourceName);
         Vertex destinationVertex = createVertex(destinationName);
         sourceVertex.addEdge(destinationVertex, weight);
-        destinationVertex.addEdge(sourceVertex, weight);
     }
 
     /**
@@ -60,54 +58,127 @@ public class Graph {
     }
 
     /**
-     * Returns infinity
-     */
-    public static int getInfinity() {
-        return INFINITY;
-    }
-
-    /**
-     * Prints the graph
+     * Prints the graph alphabetically
      */
     public void print() {
+        // Sorts the hash map with a TreeSet
         SortedSet<String> vertices = new TreeSet<String>(vertexMap.keySet());
-        for(String vertexName : vertices) {
+
+        // Loops through the vertices and prints out each edge
+        for(String vertexName: vertices) {
             System.out.println(vertexName);
             Vertex vertex = vertexMap.get(vertexName);
             vertex.sortEdges();
             vertex.printEdges();
         }
+        System.out.println();
     }
 
     /**
-     * Driver routine to print total distance.
-     * It calls recursive routine to print shortest path to
-     * destNode after a shortest path algorithm has run.
+     * Calculates the shortest path using Dijkstra's Algorithm. Clears all the predecessor data and shortest
+     * path data currently held by each Vertex. Gets the source vertex and destination vertex from the two
+     * strings entered by the user. If the vertices exist, it computes the shortest paths to all vertices from
+     * the source vertex, then it finds the shortest path from the destination vertex back to the source
+     * vertex.
      */
-    public void printPath(String destinationName) {
-        Vertex vertex = vertexMap.get(destinationName);
-        if(vertex == null)
-            throw new NoSuchElementException("Destination vertex not found");
-        else if(vertex.getPathDistance() == INFINITY)
-            System.out.println(destinationName + " is unreachable");
-        else{
-            System.out.print("(Distance is: " + vertex.getPathDistance() + ") ");
-            printPath(vertex);
-            System.out.println( );
+    public void findShortestPath(String sourceVertexName, String destinationVertexName) {
+        // Clears the predecessors and minimum path distance currently held with each vertex
+        clearAll();
+
+        // Gets the two vertices from the strings given
+        Vertex sourceVertex = getVertex(sourceVertexName);
+        Vertex destinationVertex = getVertex(destinationVertexName);
+
+        // If either of the vertices do not exist, no path exists
+        if(sourceVertex == null || destinationVertex == null)
+            System.out.println("No path exists from " + sourceVertexName + " to " + destinationVertexName);
+        else {
+            // Computes the minimum paths to all vertices from the source vertex, then gets the shortest path
+            // to the destination vertex and adds each vertex to a list. That list is then printed.
+            Dijkstra.computePaths(sourceVertex);
+            List<Vertex> path = Dijkstra.getShortestPathTo(destinationVertex);
+            printPath(path, destinationVertex);
+            System.out.println();
         }
     }
 
     /**
-     * Recursive routine to print shortest path to dest
-     * after running shortest path algorithm. The path
-     * is known to exist.
+     * Prints the shortest path by printing the name of each vertex in the path list, then printing the
+     * minimum path distance to the destination vertex
      */
-    private void printPath(Vertex destination) {
-        if(destination.getPreviousVertex() != null) {
-            printPath(destination.getPreviousVertex());
-            System.out.print(" to ");
+    private void printPath(List<Vertex> path, Vertex destinationVertex) {
+        for(int i = 0; i < path.size(); i++)
+            System.out.print(path.get(i).getName() + " ");
+        System.out.println(destinationVertex.getMinDistance());
+    }
+
+    /**
+     * Calculates all reachable vertices using Breadth First Search
+     */
+    public void reachable() {
+        // Gets a sorted set of all the vertices in the graph
+        SortedSet<String> vertices = new TreeSet<String>(vertexMap.keySet());
+
+        // Loops through all the vertices in the graph
+        for(String vertexName: vertices) {
+            Queue<Vertex> queue = new LinkedList<Vertex>();       // Holds a queue for running BFS
+            List<Edge> reachableList = new LinkedList<Edge>();  // Holds a list of all the reachable vertices
+            Vertex vertex = getVertex(vertexName);           // Gets the current vertex
+
+            // If the vertex is null, returns
+            if(vertex == null)
+                return;
+
+            // Sets visited to true for the vertex and adds the vertex to the end of the queue
+            vertex.setVisited();
+            queue.add(vertex);
+
+            // Runs BFS to find every vertex that is reachable from the current vertex
+            findReachable(queue, reachableList);
+
+            // Prints out the name of the current vertex
+            System.out.println(vertexName);
+
+            // Prints all the reachable vertices
+            printReachable(reachableList);
+
+            // Clears the reachable data for the current vertex in order to run the algorithm on the
+            // next vertex
+            clearAll();
         }
-        System.out.print(destination.getName());
+        System.out.println();
+    }
+
+    /**
+     * Runs BFS on the graph for a given vertex and adds each found vertex to the reachable list. Marks
+     * all visited vertices as visited.
+     */
+    private void findReachable(Queue<Vertex> queue, List<Edge> reachableList) {
+        // While the queue isn't empty (there are still vertices to visit)
+        while(!queue.isEmpty()) {
+            // Removes the vertex from the front of the queue
+            Vertex r = queue.remove();
+
+            // Loops over all of the adjacent edges of the current vertex
+            for(Edge n: r.getAdjListOfEdges()) {
+                // If the vertex hasn't been visited, it adds it to the queue and the reachable list,
+                // and marks the vertex as visited
+                if(!n.getDestinationVertex().visited()) {
+                    queue.add(n.getDestinationVertex());
+                    n.getDestinationVertex().setVisited();
+                    reachableList.add(n);
+                }
+            }
+        }
+    }
+
+    /**
+     * Sorts the reachable list, then loops through it and prints all of the verties in the list
+     */
+    private void printReachable(List<Edge> reachableList) {
+        Collections.sort(reachableList, new EdgeComparator());
+        for(int i = 0; i < reachableList.size(); i++)
+            System.out.println("  " + reachableList.get(i).getDestinationVertex().getName());
     }
 
     /**
