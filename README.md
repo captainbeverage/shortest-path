@@ -4,7 +4,9 @@
 This Java program constructs a graph based on nodes with weighted edges. You can add edges, remove edges, find the shortest path from one node to another (uding Dijkstra's Algorithm), and print the graph.
 
 *** How to install
-```git clone https://github.com/jtharris-dev/shortest-path.git```
+```
+git clone https://github.com/jtharris-dev/shortest-path.git
+```
 Compile and run in any IDE for Java
 
 ### Initial Instructions
@@ -12,19 +14,31 @@ Compile and run in any IDE for Java
 
 ### Commands
 Add an edge with two vertices and an edge weight
-```addedge <vertex1> <vertex2> <weight>```
+```
+addedge <vertex1> <vertex2> <weight>
+```
 
 Remove an edge
-```deleteedge <vertex1> <vertex2>```
+```
+deleteedge <vertex1> <vertex2>
+```
 
 Find the shortest path from one vertex to another
-```path <starting vertex> <ending vertex>```
+```
+path <starting vertex> <ending vertex>
+```
 
 Print the graph
-```print```
+```
+print
+```
 
 Print every node, and all of the nodes that that node can reach
-```reachable```
+```
+reachable
+```
 
 Quit the program
-```quit```
+```
+quit
+```
