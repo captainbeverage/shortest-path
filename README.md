@@ -13,32 +13,22 @@ Compile and run in any IDE for Java
  - When you first run the program, it constructs an initial graph based on an input file. An example file has been provided: input.txt. Each line in the file has a pair of nodes with a value to indicate the weight of the edge between them. Simply edit this file, or make your own. When the program begins, it will ask you for the input file. Simply enter the filename you would like to use.
 
 ### Commands
+```
 Add an edge with two vertices and an edge weight
-```
-addedge <vertex1> <vertex2> <weight>
-```
+'addedge <vertex1> <vertex2> <weight>'
+
 
 Remove an edge
-```
-deleteedge <vertex1> <vertex2>
-```
+'deleteedge <vertex1> <vertex2>'
 
 Find the shortest path from one vertex to another
-```
-path <starting vertex> <ending vertex>
-```
+'path <starting vertex> <ending vertex>'
 
 Print the graph
-```
-print
-```
+'print'
 
 Print every node, and all of the nodes that that node can reach
-```
-reachable
-```
+'reachable'
 
 Quit the program
-```
-quit
-```
+'quit'
