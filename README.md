@@ -9,10 +9,10 @@ git clone https://github.com/jtharris-dev/shortest-path.git
 ```
 Compile and run in any IDE for Java
 
-*** Initial Instructions
+### Initial Instructions
  - When you first run the program, it constructs an initial graph based on an input file. An example file has been provided: input.txt. Each line in the file has a pair of nodes with a value to indicate the weight of the edge between them. Simply edit this file, or make your own. When the program begins, it will ask you for the input file. Simply enter the filename you would like to use.
 
-*** Commands
+### Commands
 Add an edge with two vertices and an edge weight
 ```
 addedge <vertex1> <vertex2> <weight>
